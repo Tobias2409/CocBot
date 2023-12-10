@@ -140,7 +140,7 @@ namespace CocBot
                 }
             }
             var task = tasks.ElementAt(positionNr);
-            task.Time = hours * 3600 + minutes * 60;
+            task.Time = hours * 3600 + minutes;
 
             Console.WriteLine($"Upgrade starting in {task.Time} seconds");
             Console.WriteLine($"Position 1: x: {task.X1} y: {task.Y1}");
@@ -269,10 +269,10 @@ namespace CocBot
 
         private void CheckUpgradceDo(object? state)
         {
-            foreach (var ut in tasks.Where(x => x.Time >= 0))
+            foreach (var ut in tasks.Where(x => x.Time > 0))
             {
                 ut.Tick();
-                if (ut.Time > 0) break;
+                if (ut.Time > 0) continue;
 
 
                 LeftClick(ut.X1, ut.Y1);
@@ -283,7 +283,7 @@ namespace CocBot
                 Console.WriteLine("Execute");
             }
 
-            tasks = tasks.Where(x => x.Time != 0).ToList();
+            //tasks = tasks.Where(x => x.Time != 0).ToList();
 
         }
 
