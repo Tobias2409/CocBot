@@ -140,7 +140,7 @@ namespace CocBot
                 }
             }
             var task = tasks.ElementAt(positionNr);
-            task.Time = hours * 3600 + minutes * 10;
+            task.Time = hours * 3600 + minutes * 60;
 
             Console.WriteLine($"Upgrade starting in {task.Time} seconds");
             Console.WriteLine($"Position 1: x: {task.X1} y: {task.Y1}");
