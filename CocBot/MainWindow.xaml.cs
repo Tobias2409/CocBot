@@ -276,9 +276,9 @@ namespace CocBot
 
 
                 LeftClick(ut.X1, ut.Y1);
-                Thread.Sleep(500);
+                Thread.Sleep(300);
                 LeftClick(ut.X2, ut.Y2);
-                Thread.Sleep(400);
+                Thread.Sleep(300);
                 LeftClick(ut.X3, ut.Y3);
                 Console.WriteLine("Execute");
             }
@@ -306,10 +306,6 @@ namespace CocBot
             }
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            Console.WriteLine("aödsfl");
-        }
     }
 
 }
