@@ -29,6 +29,7 @@
 
         </Grid>
         <Button Content="Add" Click="AddClick"/>
+        <Button Content="Add Random Clicks" Click="AddRandomClicks"/>
 
     </StackPanel>
 </Window>

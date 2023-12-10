@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Numerics;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -19,6 +20,7 @@ namespace CocBot
     {
         int row = 0;
         private List<UpgradeTask> tasks = new List<UpgradeTask>();
+        private List<Vector2> positionsRandomClick = [];
 
         public MainWindow()
         {
@@ -114,7 +116,7 @@ namespace CocBot
             row++;
         }
 
-       
+
 
         private void SaveTimer(object sender, RoutedEventArgs e)
         {
@@ -151,6 +153,9 @@ namespace CocBot
         private int pos2Index = -1;
         private int pos1Index = -1;
         private int pos3Index = -1;
+        private bool addRandom = false;
+        private bool hasStartedFlashing = false;
+        private int posBefore = -1;
 
         private void Pos2Click(object sender, RoutedEventArgs e)
         {
@@ -210,7 +215,7 @@ namespace CocBot
 
 
         public Timer timer;
-        
+
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             timer = new Timer(CheckUpgradceDo, null, 0, 1000);
@@ -239,20 +244,35 @@ namespace CocBot
 
 
 
+            if (addRandom)
+            {
+                var vec = new Vector2
+                {
+                    X = point.X,
+                    Y = point.Y
+                };
 
-            if (pos1Index != -1)
-            {
-                tasks.ElementAt(pos1Index).X1 = point.X;
-                tasks.ElementAt(pos1Index).Y1 = point.Y;
+
+                positionsRandomClick.Add(vec);
+                addRandom = !addRandom;
             }
-            else if (pos2Index != -1)
+            else
             {
-                tasks.ElementAt(pos2Index).X2 = point.X;
-                tasks.ElementAt(pos2Index).Y2 = point.Y;
-            }
-            else if(pos3Index != -1) {
-                tasks.ElementAt(pos3Index).X3 = point.X;
-                tasks.ElementAt(pos3Index).Y3 = point.Y;
+                if (pos1Index != -1)
+                {
+                    tasks.ElementAt(pos1Index).X1 = point.X;
+                    tasks.ElementAt(pos1Index).Y1 = point.Y;
+                }
+                else if (pos2Index != -1)
+                {
+                    tasks.ElementAt(pos2Index).X2 = point.X;
+                    tasks.ElementAt(pos2Index).Y2 = point.Y;
+                }
+                else if (pos3Index != -1)
+                {
+                    tasks.ElementAt(pos3Index).X3 = point.X;
+                    tasks.ElementAt(pos3Index).Y3 = point.Y;
+                }
             }
 
             //var ut = new UpgradeTask(point.X, point.Y, point.X, point.Y, 3);
@@ -265,10 +285,25 @@ namespace CocBot
             Console.WriteLine("Key Down");
             if (e.Key == Key.OemPeriod)
                 GetMousePosition();
+
+            if (e.Key == Key.F1)
+                hasStartedFlashing = !hasStartedFlashing;
         }
 
         private void CheckUpgradceDo(object? state)
         {
+
+            if (positionsRandomClick.Count() >= 2 && hasStartedFlashing) {
+                int rand = -1;
+                do
+                {
+                    rand = new Random().Next(positionsRandomClick.Count());
+                } while (rand == posBefore);
+                posBefore = rand;
+                var element = positionsRandomClick.ElementAt(rand);
+                LeftClick((int)element.X, (int)element.Y);
+            }
+
             foreach (var ut in tasks.Where(x => x.Time > 0))
             {
                 ut.Tick();
@@ -290,13 +325,13 @@ namespace CocBot
         class UpgradeTask
         {
             public int Id { get; set; }
-            public int X1 { get;  set; }
-            public int Y1 { get;  set; }
-            public int X2 { get;  set; }
-            public int Y2 { get;  set; }
+            public int X1 { get; set; }
+            public int Y1 { get; set; }
+            public int X2 { get; set; }
+            public int Y2 { get; set; }
             public int X3 { get; set; }
             public int Y3 { get; set; }
-            public int Time { get;  set; }
+            public int Time { get; set; }
 
 
             public void Tick() => Time--;
@@ -306,6 +341,10 @@ namespace CocBot
             }
         }
 
+        private void AddRandomClicks(object sender, RoutedEventArgs e)
+        {
+            addRandom = !addRandom;
+        }
     }
 
 }
