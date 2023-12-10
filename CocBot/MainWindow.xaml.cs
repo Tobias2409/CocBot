@@ -140,7 +140,7 @@ namespace CocBot
                 }
             }
             var task = tasks.ElementAt(positionNr);
-            task.Time = hours * 3600 + minutes * 60;
+            task.Time = hours * 3600 + minutes * 10;
 
             Console.WriteLine($"Upgrade starting in {task.Time} seconds");
             Console.WriteLine($"Position 1: x: {task.X1} y: {task.Y1}");
@@ -269,21 +269,23 @@ namespace CocBot
 
         private void CheckUpgradceDo(object? state)
         {
+            //Console.WriteLine(tasks.Count());
+
             foreach (var ut in tasks.Where(x => x.Time >= 0))
             {
                 ut.Tick();
-                if (ut.Time > 0) break;
+                if (ut.Time > 0) continue;
 
 
                 LeftClick(ut.X1, ut.Y1);
-                Thread.Sleep(500);
+                Thread.Sleep(300);
                 LeftClick(ut.X2, ut.Y2);
-                Thread.Sleep(400);
+                Thread.Sleep(300);
                 LeftClick(ut.X3, ut.Y3);
                 Console.WriteLine("Execute");
             }
 
-            tasks = tasks.Where(x => x.Time != 0).ToList();
+            //tasks = tasks.Where(x => x.Time != 0).ToList();
 
         }
 
@@ -306,10 +308,6 @@ namespace CocBot
             }
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            Console.WriteLine("aödsfl");
-        }
     }
 
 }
