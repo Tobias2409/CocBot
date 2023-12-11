@@ -101,7 +101,7 @@ namespace CocBot
                         break;
 
                     case 0x2E:
-                        System.Windows.Application.Current.Shutdown();
+                        Application.Current.Shutdown();
                         Environment.Exit(0);
                         break;
                 }
@@ -643,8 +643,11 @@ namespace CocBot
 
             public override string ToString()
             {
+                TimeSpan time = TimeSpan.FromSeconds(Time);
+
+                string str = time.ToString(@"hh\:mm\:ss\:fff");
                 string name = Name == "" ? "" : $" {Name}";
-                return $"Upgrade{name}: Time left: {Time}";
+                return $"Upgrade{name}: Time left: {time}";
             }
         }
 
