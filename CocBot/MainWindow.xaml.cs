@@ -14,8 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace CocBot
-{
+namespace CocBot;
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
@@ -25,6 +24,7 @@ namespace CocBot
         private static List<UpgradeTask> tasks = new List<UpgradeTask>();
         private static List<Vector2> positionsRandomClick = [];
         private static MainWindow _instance;
+        private HookManager _hookInstance;
 
         private static int pos2Index = -1;
         private static int pos1Index = -1;
@@ -36,94 +36,58 @@ namespace CocBot
         private static int index = -1;
         private static bool isRecording = true;
 
-        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-        private static extern IntPtr SetWindowsHookEx(int idHook, LowLevelKeyboardProc lpfn, IntPtr hMod, uint dwThreadId);
 
-        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool UnhookWindowsHookEx(IntPtr hhk);
 
-        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-        private static extern IntPtr CallNextHookEx(IntPtr hhk, int nCode, IntPtr wParam, KBDLLHOOKSTRUCT lParam);
-
-        [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-        private static extern IntPtr GetModuleHandle(string lpModuleName);
-
-        private const int WH_KEYBOARD_LL = 13;
-        private const int WM_KEYDOWN = 0x0100;
-
-        private delegate IntPtr LowLevelKeyboardProc(int nCode, IntPtr wParam, KBDLLHOOKSTRUCT lParam);
-        [StructLayout(LayoutKind.Sequential)]
-        public struct KBDLLHOOKSTRUCT
+        private void HookedFunc(uint vkCode)
         {
-            public uint vkCode;
-            public uint scanCode;
-            public uint flags;
-            public uint time;
-            public IntPtr dwExtraInfo;
-        }
-        private static IntPtr KeyboardProc(int nCode, IntPtr wParam, KBDLLHOOKSTRUCT lParam)
-        {
-            if (nCode >= 0 && wParam == (IntPtr)WM_KEYDOWN)
+            switch (vkCode)
             {
-                switch (lParam.vkCode)
-                {
-                    case 0x70:
-                        hasStartedFlashing = !hasStartedFlashing;
-                        break;
-                    case 0xBE:
-                        if (pos1Index != -1)
-                        {
-                            pos1Index = -1;
-                            pos2Index = index;
-                        }
-                        else if (pos2Index != -1)
-                        {
-                            pos2Index = -1;
-                            pos3Index = index;
-                        }
-                        else if (pos3Index != -1)
-                        {
-                            pos3Index = -1;
-                            pos4Index = index;
-                        }
-                        else if (pos1Index == -1 && pos2Index == -1 && pos3Index == -1 && pos4Index == -1 && index != -1)
-                        {
-                            pos1Index = index;
-                        }
-                        else if (pos4Index != -1)
-                        {
-                            pos4Index = -1;
-                            index = -1;
-                        }
+                case 0x70:
+                    hasStartedFlashing = !hasStartedFlashing;
+                    break;
+                case 0xBE:
+                    if (pos1Index != -1)
+                    {
+                        pos1Index = -1;
+                        pos2Index = index;
+                    }
+                    else if (pos2Index != -1)
+                    {
+                        pos2Index = -1;
+                        pos3Index = index;
+                    }
+                    else if (pos3Index != -1)
+                    {
+                        pos3Index = -1;
+                        pos4Index = index;
+                    }
+                    else if (pos1Index == -1 && pos2Index == -1 && pos3Index == -1 && pos4Index == -1 && index != -1)
+                    {
+                        pos1Index = index;
+                    }
+                    else if (pos4Index != -1)
+                    {
+                        pos4Index = -1;
+                        index = -1;
+                    }
 
-                        _instance.GetMousePosition();
-                        break;
+                    _instance.GetMousePosition();
+                    break;
 
-                    case 0x2E:
-                        Application.Current.Shutdown();
-                        Environment.Exit(0);
-                        break;
-                }
+                case 0x2E:
+                    Application.Current.Shutdown();
+                    Environment.Exit(0);
+                    break;
             }
-
-            return CallNextHookEx(_hook, nCode, wParam, lParam);
         }
-
-        private static IntPtr _hook = IntPtr.Zero;
-        private static LowLevelKeyboardProc _proc = KeyboardProc;
 
 
         public MainWindow()
         {
             _instance = this;
+            _hookInstance = HookManager.createInstance(HookedFunc);
+
             InitializeComponent();
-            using (var process = Process.GetCurrentProcess())
-            using (var module = process.MainModule)
-            {
-                _hook = SetWindowsHookEx(WH_KEYBOARD_LL, _proc,
-                    GetModuleHandle(module.ModuleName), 0);
-            }
         }
 
         private void AddClick(object sender, RoutedEventArgs e)
@@ -668,5 +632,3 @@ namespace CocBot
 
 
     }
-
-}
