@@ -9,16 +9,21 @@
         KeyDown="Window_KeyDown"
         Title="MainWindow" Height="450" Width="800">
     <StackPanel>
+        
         <Grid Name="pnlInputs" Margin="50">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition></ColumnDefinition>
                 <ColumnDefinition></ColumnDefinition>
                 <ColumnDefinition></ColumnDefinition>
                 <ColumnDefinition></ColumnDefinition>
-                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition Width="60"></ColumnDefinition>
+                <ColumnDefinition Width="60"></ColumnDefinition>
+                <ColumnDefinition Width="60"></ColumnDefinition>
+                <ColumnDefinition Width="60"></ColumnDefinition>
                 <ColumnDefinition></ColumnDefinition>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
+                <RowDefinition></RowDefinition>
                 <RowDefinition></RowDefinition>
                 <RowDefinition></RowDefinition>
                 <RowDefinition></RowDefinition>
@@ -28,8 +33,8 @@
 
 
         </Grid>
-        <Button Content="Add" Click="AddClick"/>
-        <Button Content="Add Random Clicks" Click="AddRandomClicks"/>
-
+        <Button Content="Add" Click="AddClick" Width="50"/>
+        <Button Content="Start record random Clicks" Click="AddRandomClicks" Width="150"/>
+        <ListBox Name="lstTasks" />
     </StackPanel>
 </Window>
